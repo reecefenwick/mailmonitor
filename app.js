@@ -68,14 +68,10 @@ app.use(function(req, res, next) {
     res.on('finish', function() {
         logger.info({
             _id: req.id,
-            client: {
-                ip: req.connection.remoteAddress
-            },
             method: req.method,
             url: req.url,
             statusCode: res.statusCode,
-            time: (Date.now() - req.start),
-            length: res._headers['content-length']
+            time: (Date.now() - req.start)
         });
     });
 
@@ -93,6 +89,14 @@ app.use(function(req, res, next) {
 });
 
 app.use('/', routes);
+
+// 404 Handler
+app.use(function(req, res, next) {
+    next({
+        status: 404,
+        message: 'Not found.'
+    })
+});
 
 // error handlers
 

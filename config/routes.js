@@ -9,12 +9,26 @@ var express = require('express');
 var router = express.Router();
 
 // Load Controllers
-// var OtherController = require('OtherController'); - Example
+var MailboxCtrl = require('../src/controllers/MailboxController');
 
 // Map HTTP Endpoints to controllers
+router
+    .route('/api/')
+    .get(function(req, res, next) {
+        res.status(200).json({
+            'mailboxes_url': '/mailbox'
+        })
+    });
 
-//Configure Other Resource - This is an example
-//router.post('/other', Other.create);
-//router.get('/other/:id([0-9a-f]{24})', Other.getOne);
+router
+    .route('/api/mailbox')
+    .post(MailboxCtrl.addMailbox)
+    .get(MailboxCtrl.search);
+
+router
+    .route('/api/mailbox/:_id')
+    .get(MailboxCtrl.getMailbox)
+    .put(MailboxCtrl.updateMailbox)
+    .delete(MailboxCtrl.removeMailbox);
 
 module.exports = router;
