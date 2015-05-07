@@ -1,0 +1,20 @@
+{
+  "name": "mailmonitor-api",
+  "version": "0.0.1",
+  "private": true,
+  "scripts": {
+    "start": "node bin/start",
+    "test": "mocha tests/**/*.js -u tdd --timeout 50000"
+  },
+  "dependencies": {
+    "body-parser": "~1.10.2",
+    "compression": "1.4.1",
+    "express": "~4.11.1",
+    "mongoose": "3.8.22",
+    "node-uuid": "1.4.2",
+    "winston": "^1.0.0"
+  },
+  "devDependencies": {
+    "supertest": "0.15.0"
+  }
+}
