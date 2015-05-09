@@ -10,6 +10,7 @@
 var Mailbox = require('../services/MailboxService');
 
 module.exports.addMailbox = function(req, res, next) {
+    // Enhancement - Validate that the credentials work before committing?
     Mailbox.create(req.body, function(err, doc) {
         if (err) return next(err);
 

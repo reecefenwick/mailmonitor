@@ -16,7 +16,7 @@ var mailboxSchema = new Schema({
         required: true,
         default: ''
     },
-    credentials: {
+    props: {
         username: {
             type: String,
             required: true
@@ -24,26 +24,24 @@ var mailboxSchema = new Schema({
         password: {
             type: String,
             required: true
+        },
+        folder: {
+            type: String,
+            required: true
         }
     },
     alerts: {
         low: {
-            threshold: {
-                type: Number,
-                required: true
-            }
+            type: Number,
+            required: true
         },
         medium: {
-            threshold: {
-                type: Number,
-                required: true
-            }
+            type: Number,
+            required: true
         },
         high: {
-            threshold: {
-                type: Number,
-                required: true
-            }
+            type: Number,
+            required: true
         }
     }
 });

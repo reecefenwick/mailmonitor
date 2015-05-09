@@ -31,6 +31,9 @@ mongoose.connection.on('open', function () {
     console.log('Connected to the database');
 });
 
+// Configure agenda and scheduled jobs
+require('./config/agenda');
+
 // Initiate App
 var app = express();
 

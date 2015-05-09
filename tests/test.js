@@ -30,20 +30,15 @@ describe('POST /mailbox', function() {
     it('responds successfully with object id', function(done) {
         var body = {
             name: 'EasySuiteTest@suncorp.com.au',
-            credentials: {
+            props: {
                 username: 'EasySuiteTest',
-                password: 'EasyDoc01'
+                password: 'EasyDoc01',
+                folder: 'INBOX'
             },
             alerts: {
-                low: {
-                    threshold: 5
-                },
-                medium: {
-                    threshold: 20
-                },
-                high: {
-                    threshold: 100
-                }
+                low: 50,
+                medium: 100,
+                high: 200
             }
         };
 
@@ -51,7 +46,7 @@ describe('POST /mailbox', function() {
             .post(basePath + '/mailbox')
             .send(body)
             .expect(function(res) {
-                res.body.should.have.property('_id')
+                res.body.should.have.property('_id');
 
                 mailbox = res.body
             })
