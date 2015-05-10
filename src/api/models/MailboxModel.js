@@ -43,6 +43,11 @@ var mailboxSchema = new Schema({
             type: Number,
             required: true
         }
+    },
+    active: {
+        type: Boolean,
+        require: true,
+        default: false
     }
 });
 

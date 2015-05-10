@@ -9,7 +9,7 @@ var express = require('express');
 var router = express.Router();
 
 // Load Controllers
-var MailboxCtrl = require('../src/controllers/MailboxController');
+var MailboxCtrl = require('../src/api/controllers/MailboxController');
 
 // Map HTTP Endpoints to controllers
 router

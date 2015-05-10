@@ -4,7 +4,7 @@ var winston = require('winston'),
     env = process.env.NODE_ENV || 'development';
 
 
-var name = 'OaaS';
+var name = 'MailMonitor';
 
 var config = {
     levels: {

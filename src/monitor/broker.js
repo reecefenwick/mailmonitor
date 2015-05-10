@@ -5,19 +5,23 @@
  * @help        :: https://github.com/rschmukler/agenda
  */
 
+var child_process = require('child_process');
 var async = require('async');
-var Parallel = require('paralleljs');
 
-var Mailbox = require('../MailboxService');
-
+var Mailbox = require('../api/services/MailboxService');
 var CheckMailboxes = require('./worker');
 
 var job = function(callback) {
+    return;
     console.log('job');
     // Retrieve all jobs
     // Spawn 5 threads at a time - passing through the mailbox config
-    var query = {};
-    var scope = {};
+    var query = {
+        active: true
+    };
+    var scope = {
+        _id: true
+    };
     var options = {
         limit: null,
         skip: 0
@@ -33,15 +37,12 @@ var job = function(callback) {
         }
 
         // For loop - but only 5 at a time - using async
-        async.eachLimit(docs, 5, function(mailbox, done) {
+        async.eachLimit(docs, 10, function(mailbox, done) {
+            var Threads = require('threads_a_gogo');
+            var t = Threads.create();
 
-            var p = new Parallel(mailbox);
-
-            p.spawn(CheckMailboxes).then(function(data) {
-                if (!data) throw Error('erpahge');
-                console.log(data);
-                done()
-            });
+            t.eval(CheckMailboxes);
+            t.eval('CheckMailboxes(' + mailbox._id +')')
 
         }, function(err) {
             if (err) return console.log(err);
