@@ -15,14 +15,11 @@ var CheckMailbox = require('../src/monitor/broker');
 console.log('agenda');
 
 var options = {
-    concurrency: 1,
-    lockLifetime: 60000
+    concurrency: 1
 };
 
 agenda.define('check mailboxes', options, function(job, done) {
     console.log(job.attrs); // Worth logging
-    console.log('geat');
-    return done();
     CheckMailbox(done);
 });
 

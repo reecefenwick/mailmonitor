@@ -12,12 +12,12 @@ mongoose.connection.on('open', function () {
     console.log('Connected to the database');
 });
 
-var MonitorBroker = require('./broker');
-var MonitorWorker = require('./worker');
+var MonitorBroker = require('../src/monitor/broker');
+var MonitorWorker = require('../src/monitor/worker');
 
 describe('Worker', function () {
 
-    var _id = "554bd65cb03f9dbe144357aa";
+    var _id = "554ef91f57c0e2cf6bb78c64";
 
     it('should do things', function (done) {
         MonitorWorker(_id, function (err) {

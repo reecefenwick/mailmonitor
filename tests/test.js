@@ -31,8 +31,8 @@ describe('POST /mailbox', function() {
         var body = {
             name: 'EasySuiteTest@suncorp.com.au',
             props: {
-                username: 'EasySuiteTest',
-                password: 'EasyDoc01',
+                username: 'fenwickreece08@gmail.com',
+                password: 'yenc8A32e',
                 folder: 'INBOX'
             },
             alerts: {

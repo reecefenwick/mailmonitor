@@ -13,16 +13,20 @@ var Mailbox = require('../api/services/MailboxService');
 var mailbox = {};
 var imap = {};
 
-var getMailboxConfig = function(callback) {
-    console.log(mailbox._id);
-    Mailbox.findOne({ _id: mailbox._id }, {}, function(err, doc) {
-        if (err) return callback(err);
+var jobSummary = {};
 
-        if (!doc) return callback({
-            error: 'No mailbox found?!'
+var getMailboxConfig = function(callback) {
+    console.log('getting mailbox config %s', mailbox._id);
+    Mailbox.findOne({ _id: mailbox._id }, {}, function(err, doc) {
+        if (err) return callback({
+            step: 'getMailboxConfig',
+            error: err
         });
 
-        console.log(err);
+        if (!doc) return callback({
+            step: 'getMailboxConfig',
+            error: 'No mailbox found?!'
+        });
 
         mailbox = doc;
 
@@ -30,20 +34,23 @@ var getMailboxConfig = function(callback) {
     })
 };
 
-var getEmails = function(callback){
-    console.log(mailbox);
+var getEmails = function(callback) {
+    console.log('connecting to mailbox');
     imap = new Imap({
-        user: 'fenwickreece08@gmail.com',
-        password: 'yenc8A32e',
+        user: mailbox.props.username,
+        password: mailbox.props.password,
         host: 'imap.gmail.com',
         port: 993,
         tls: true
     });
 
     imap.once('ready', function() {
-        imap.openBox('INBOX', true, function(err, box) {
-            console.log(box.messages.total);
+        imap.openBox(mailbox.props.folder, true, function(err, box) {
             if (err) return callback(err);
+
+            jobSummary.totalMsgs = box.messages.total;
+
+            console.log('%s messages in %s', jobSummary.totalMsgs, mailbox.props.folder);
 
             imap.search(["UNSEEN"], function(err, results) {
                 if (err) return callback(err);
@@ -54,12 +61,15 @@ var getEmails = function(callback){
     });
 
     imap.once('error', function(err) {
+        if (err.code && err.code === 'ECONNRESET') return;
+
         console.error('Error with mailbox %s - Error: %s', mailbox._id, err);
-        return callback(err)
+
+        callback(err)
     });
 
     imap.once('end', function() {
-        console.log('Connection ended');
+        console.log('Connection ended to mailbox %s', mailbox.name);
     });
 
     imap.connect();
@@ -96,11 +106,14 @@ var parseEmails = function(results, callback) {
         });
 
         fetch.once('error', function(err) {
-            console.log('?');
+            console.log('Error fetching emails');
             done(err);
         });
     }, function(err) {
-        if (err) callback(err);
+        if (err) {
+            console.log('Error parsing emails');
+            return callback(err);
+        }
 
         imap.end();
 
@@ -109,81 +122,81 @@ var parseEmails = function(results, callback) {
 };
 
 var checkEmailHealth = function(emails, callback) {
-    // For each email rate the threshold
-    // async.each
-    // Check high - medium - low
-    // Count each threshold occurrence
+    console.log('checking email health');
     var health = {
         low: 0,
         medium: 0,
         high: 0
     };
 
-    var alerts = mailbox.alerts;
+    var summary = mailbox.alerts;
 
-    var timenow = new Date();
+    var timeNow = new Date();
 
     async.each(emails, function(email, done) {
         var received = new Date(email.date);
 
-        var seconds = Math.round((timenow-received)/1000);
+        var seconds = Math.round((timeNow-received)/1000);
 
-        if (seconds > alerts.high.threshold) {
+        if (seconds > summary.high) {
             health.high++;
             return done();
         }
 
-        if (seconds > alerts.medium.threshold) {
+        if (seconds > summary.medium) {
             health.medium++;
             return done();
         }
 
-        if (seconds > alerts.low.threshold) {
+        if (seconds > summary.low) {
             health.low++;
             return done();
         }
 
+        done();
     }, function(err){
+        console.log('hi');
         if (err) return callback(err);
 
-        console.log(health);
-        callback(null, emails)
+        console.log('finished email health');
+
+        callback(null, summary)
     });
 };
 
 var sendNotifications = function(summary, callback) {
-    console.log(summary)
+    console.log(summary);
+    callback();
 };
 
 // This is exported - callback is optional - helps with testing
 var checkMailbox = function(_id, callback) {
+    var startTime = new Date();
     mailbox._id = _id;
 
-    callback = typeof callback === 'undefined' ? false : callback;
+    if(typeof callback === 'undefined') throw Error('No callback provided');
+
+    console.log('starting job');
 
     async.waterfall([
         getMailboxConfig,
         getEmails,
         parseEmails,
-        checkEmailHealth
-    ], function (err, result) {
+        checkEmailHealth,
+        sendNotifications
+    ], function (err, summary) {
+        var finishTime = new Date();
+
+        console.log('Completed processing %s in %s seconds', mailbox.name, Math.round((finishTime-startTime)/1000));
+
         if (err) {
-            if (callback) return callback(null, result);
-            return console.log(err);
+            callback(err);
+            console.log(err);
+            return;
         }
 
-        if (callback) return callback(null, result);
+        callback();
     });
 };
-
-//for (var i = 0; i < process.argv.length; i++) {
-//    if (process.argv[i] === "--ID") {
-//        checkMailbox(process.argv[i + 1], function(err, result) {
-//            if (err) return console.log(err);
-//
-//            console.log(result)
-//        })
-//    }
-//}
 
 module.exports = checkMailbox;
