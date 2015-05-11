@@ -32,7 +32,7 @@ mongoose.connection.on('open', function () {
 });
 
 // Configure agenda and scheduled jobs
-require('./config/agenda');
+//require('./config/agenda');
 
 // Initiate App
 var app = express();
@@ -90,6 +90,9 @@ app.use(function(req, res, next) {
         message: 'Unable to connect the the database.'
     })
 });
+
+// Try find matching static file
+app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 

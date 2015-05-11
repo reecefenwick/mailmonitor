@@ -1,0 +1,64 @@
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            <span class="ion-information-circled"></span> Summary
+            <!--<span class="label label-success pull-right ng-binding" style="margin-left: 20px;">Active</span>-->
+        </div>
+        <div class="panel-body">
+            <div class="media">
+                <div class="media-body">
+                    <button type="button" class="btn btn-danger btn-sm pull-right" ng-click="deleteMailbox()">Delete</button>
+                    <h4>
+                        Name
+                    </h4>
+                    <a href="#" editable-text="mailbox.name">{{ mailbox.name || "empty" }}</a>
+                    <br>
+                    <br>
+                    <h4>
+                        Mailbox Details
+                    </h4>
+                    <h5>
+                        Username
+                    </h5>
+                    <a href="#" editable-text="mailbox.props.username">{{ mailbox.props.username || "empty" }}</a>
+                    <br>
+                    <h5>
+                        Password
+                    </h5>
+                    <a href="#" editable-text="mailbox.props.password">{{ mailbox.props.password || "empty" }}</a>
+                    <h5>
+                        Folder to Monitor
+                    </h5>
+                    <a href="#" editable-text="mailbox.props.folder">{{ mailbox.props.folder || "empty" }}</a>
+                    <br>
+                    <br>
+                    <h4>
+                        Alert Thresholds
+                    </h4>
+                    <h5>
+                        Low
+                    </h5>
+                    <a href="#" editable-text="mailbox.alerts.low">{{ mailbox.alerts.low || "empty" }}</a>
+                    <br>
+                    <h5>
+                        Medium
+                    </h5>
+                    <a href="#" editable-text="mailbox.alerts.medium">{{ mailbox.alerts.medium || "empty" }}</a>
+                    <br>
+                    <h5>
+                        High
+                    </h5>
+                    <a href="#" editable-text="mailbox.alerts.high">{{ mailbox.alerts.high || "empty" }}</a>
+                    <br>
+                    <br>
+                    <h4>
+                        Status
+                    </h4>
+                    <a href="#" editable-checkbox="mailbox.active" e-title="Mailbox Active?">
+                        {{ mailbox.active && "Active" || "Disabled" }}
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

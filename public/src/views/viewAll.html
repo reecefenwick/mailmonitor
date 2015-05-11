@@ -1,0 +1,20 @@
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">
+            Mailboxes
+            <div class="pull-right">
+                <input class="search" type="text" ng-model="query.name" placeholder="Search...">
+            </div>
+        </div>
+        <div class="panel-body">
+            <div class="list-group">
+                <a ng-repeat="mailbox in mailboxes | filter:query" href="/mailbox/{{mailbox._id}}" class="list-group-item">
+                    {{mailbox.name}}
+
+                    <span class="label pull-right {{mailbox.active ? 'label-success' : 'label-danger'}}" style="margin-left: 20px;">Active</span>
+                </a>
+            </div>
+            <a class="btn btn-success" href="/mailbox/add" role="button">Add Mailbox</a>
+        </div>
+    </div>
+</div>

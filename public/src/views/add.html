@@ -1,0 +1,18 @@
+<div class="container">
+    <div class="panel panel-default">
+        <div class="panel-heading">Create an Upload</div>
+        <div class="panel-body">
+            <form class="form" method="post" ng-submit="addTask()" name="taskForm">
+                <h4>Description</h4>
+
+                <div class="form-group"
+                     ng-class="{ 'has-error' : taskForm.showName.$invalid && taskForm.showName.$dirty }">
+                    <input class="form-control" type="text" name="description" ng-model="description"
+                           placeholder="Enter a description for your upload, eg. Tax documents for Rick" required
+                           autofocus>
+                </div>
+                <button class="btn btn-primary" type="submit" ng-disabled="taskForm.$invalid">Create</button>
+            </form>
+        </div>
+    </div>
+</div>

@@ -8,7 +8,11 @@
 var Imap = require('imap');
 var async = require('async');
 
+var nodemailer = require('nodemailer');
+var smtpTransport = require('nodemailer-smtp-transport');
+
 var Mailbox = require('../api/services/MailboxService');
+var logger = require('../../config/logger');
 
 var mailbox = {};
 var imap = {};
@@ -20,11 +24,14 @@ var getMailboxConfig = function(callback) {
     Mailbox.findOne({ _id: mailbox._id }, {}, function(err, doc) {
         if (err) return callback({
             step: 'getMailboxConfig',
+            code: 500,
+            info: 'There was an error calling the database',
             error: err
         });
 
         if (!doc) return callback({
             step: 'getMailboxConfig',
+            code: 404,
             error: 'No mailbox found?!'
         });
 
@@ -46,14 +53,25 @@ var getEmails = function(callback) {
 
     imap.once('ready', function() {
         imap.openBox(mailbox.props.folder, true, function(err, box) {
-            if (err) return callback(err);
+            if (err) return callback({
+                step: 'getEmails',
+                code: 'OPENFOLDER',
+                info: 'Error opening folder ' + mailbox.props.folder,
+                trace: console.trace()
+            });
 
             jobSummary.totalMsgs = box.messages.total;
 
             console.log('%s messages in %s', jobSummary.totalMsgs, mailbox.props.folder);
 
             imap.search(["UNSEEN"], function(err, results) {
-                if (err) return callback(err);
+                if (err) return callback({
+                    step: 'getEmails',
+                    code: 'SEARCH',
+                    info: 'Error searching mailbox',
+                    error: err,
+                    trace: console.trace()
+                });
 
                 callback(null, results)
             });
@@ -61,11 +79,18 @@ var getEmails = function(callback) {
     });
 
     imap.once('error', function(err) {
+        // This is to get around some weird "bug"? - ECONNRESET means it was killed by the client
         if (err.code && err.code === 'ECONNRESET') return;
 
         console.error('Error with mailbox %s - Error: %s', mailbox._id, err);
 
-        callback(err)
+        callback({
+            step: 'getEmails',
+            code: 'IMAPERROR',
+            info: 'There was an error with imap.',
+            error: err,
+            trace: console.trace()
+        })
     });
 
     imap.once('end', function() {
@@ -107,7 +132,13 @@ var parseEmails = function(results, callback) {
 
         fetch.once('error', function(err) {
             console.log('Error fetching emails');
-            done(err);
+            done({
+                step: 'parseEmails',
+                code: 'FETCHERROR',
+                info: 'Error fetching emails to be parsed.',
+                error: err,
+                trace: console.trace()
+            });
         });
     }, function(err) {
         if (err) {
@@ -156,7 +187,12 @@ var checkEmailHealth = function(emails, callback) {
         done();
     }, function(err){
         console.log('hi');
-        if (err) return callback(err);
+        if (err) return callback({
+            step: 'checkEmailHealth',
+            code: 'CHECKEMAIL',
+            info: 'Error checking email health',
+            trace: console.trace()
+        });
 
         console.log('finished email health');
 
@@ -165,18 +201,43 @@ var checkEmailHealth = function(emails, callback) {
 };
 
 var sendNotifications = function(summary, callback) {
-    console.log(summary);
-    callback();
+    return callback();
+
+    var action = null;
+
+    if (summary.high > 0 && Math.round((jobSummary.startTime - mailbox.lastCritical)) < 60000) {
+        // Send a critical alert!
+    }
+
+
+    var transporter = nodemailer.createTransport({
+        host: 'smtp.host',
+        port: 25
+    });
+
+    var subject = '';
+
+    var mailOptions = {
+        from: 'reece.fenwick@suncorp.com.au',
+        to: mailbox.contact,
+        subject: subject
+    };
+
+    transport.sendMail(mailOptions, function(err, info) {
+        if (err) return callback(err);
+
+        callback(null, info)
+    });
 };
 
 // This is exported - callback is optional - helps with testing
 var checkMailbox = function(_id, callback) {
-    var startTime = new Date();
+    jobSummary.startTime = new Date();
     mailbox._id = _id;
 
     if(typeof callback === 'undefined') throw Error('No callback provided');
 
-    console.log('starting job');
+    console.log('CHECKMAILBOX', {});
 
     async.waterfall([
         getMailboxConfig,
@@ -185,13 +246,14 @@ var checkMailbox = function(_id, callback) {
         checkEmailHealth,
         sendNotifications
     ], function (err, summary) {
-        var finishTime = new Date();
+        jobSummary.finishTime = new Date();
+        jobSummary.totalTime = Math.round((jobSummary.finishTime-jobSummary.startTime)/1000);
 
-        console.log('Completed processing %s in %s seconds', mailbox.name, Math.round((finishTime-startTime)/1000));
+        console.log('Completed processing %s in %s seconds', mailbox.name, jobSummary.totalTime);
 
         if (err) {
             callback(err);
-            console.log(err);
+            logger.error('CHECKMAILBOX', err);
             return;
         }
 

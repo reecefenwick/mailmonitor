@@ -6,14 +6,15 @@
  */
 
 var async = require('async');
+var logger = require('../../config/logger');
+var uuid = require('node-uuid');
 
 var Mailbox = require('../api/services/MailboxService');
-var CheckMailboxes = require('./worker');
+var CheckMailbox = require('./worker');
 
 var job = function(callback) {
-    console.log('job');
-    // Retrieve all jobs
-    // Spawn 5 threads at a time - passing through the mailbox config
+    var jobId = uuid.v1();
+
     var query = {
         active: true
     };
@@ -26,7 +27,6 @@ var job = function(callback) {
     };
 
     Mailbox.search(query, scope, options, function(err, docs) {
-        console.log(docs.length);
         if (err) return callback(err);
 
         if (docs.length === 0) {
@@ -36,10 +36,17 @@ var job = function(callback) {
 
         // For loop - but only 5 at a time - using async
         async.eachLimit(docs, 1, function(mailbox, done) {
-            CheckMailboxes(mailbox._id, done)
+            try {
+                CheckMailbox(mailbox._id, done)
+            } catch(e) {
+                logger.error('CheckMailbox', {
+                    error: e,
+                    trace: console.trace()
+                })
+            }
         }, function(err) {
             if (err) {
-                console.log(err);
+                logger.error('CheckMailbox', { error: err });
                 return callback();
             }
             console.log('all mailboxes checked');
