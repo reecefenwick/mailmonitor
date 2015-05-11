@@ -207,6 +207,7 @@ var sendNotifications = function(summary, callback) {
 
     if (summary.high > 0 && Math.round((jobSummary.startTime - mailbox.lastCritical)) < 60000) {
         // Send a critical alert!
+        var action = 'HIGH'
     }
 
 
@@ -237,7 +238,7 @@ var checkMailbox = function(_id, callback) {
 
     if(typeof callback === 'undefined') throw Error('No callback provided');
 
-    console.log('CHECKMAILBOX', {});
+    //console.log('CHECKMAILBOX', {});
 
     async.waterfall([
         getMailboxConfig,
@@ -249,7 +250,7 @@ var checkMailbox = function(_id, callback) {
         jobSummary.finishTime = new Date();
         jobSummary.totalTime = Math.round((jobSummary.finishTime-jobSummary.startTime)/1000);
 
-        console.log('Completed processing %s in %s seconds', mailbox.name, jobSummary.totalTime);
+        logger.info('Completed processing %s in %s seconds', mailbox.name, jobSummary.totalTime);
 
         if (err) {
             callback(err);

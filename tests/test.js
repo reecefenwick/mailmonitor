@@ -36,9 +36,17 @@ describe('POST /mailbox', function() {
                 folder: 'INBOX'
             },
             alerts: {
-                low: 50,
-                medium: 100,
-                high: 200
+                warning: {
+                    email: 'fenwickreece08@gmail.com',
+                    threshold: 600,
+                    lastWarning: null
+                },
+                critical: {
+                    email: 'escalationemail@notarealdomain.donkey',
+                    mobile: '0414472534',
+                    threshold: 6000,
+                    lastCritical: null
+                }
             },
             active: true
         };
@@ -48,7 +56,7 @@ describe('POST /mailbox', function() {
             .send(body)
             .expect(function(res) {
                 res.body.should.have.property('_id');
-
+                console.log(res.body);
                 mailbox = res.body
             })
             .expect('Content-Type', /json/)
@@ -102,6 +110,7 @@ describe('GET /mailbox', function() {
 
 describe('GET /mailbox/:_id', function() {
     it('should respond with the full mailbox config', function(done) {
+        console.log(mailbox._id);
         request(app)
             .get(basePath + '/mailbox/' + mailbox._id)
             .expect(function(res) {

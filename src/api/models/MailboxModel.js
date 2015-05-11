@@ -31,17 +31,16 @@ var mailboxSchema = new Schema({
         }
     },
     alerts: {
-        low: {
-            type: Number,
-            required: true
+        warning: {
+            threshold: { type: Number, required: true },
+            email: { type: String, required: true, default: '' },
+            lastWarning: { type: Date, required: false, default: null }
         },
-        medium: {
-            type: Number,
-            required: true
-        },
-        high: {
-            type: Number,
-            required: true
+        critical: {
+            threshold: { type: Number, required: true },
+            email: { type: String, required: true, default: '' },
+            mobile: { type: Number, required: true, default: null },
+            lastCritical: { type: Date, required: false, default: null }
         }
     },
     active: {
@@ -61,4 +60,4 @@ mailboxSchema.pre('update', function(next) {
     next();
 });
 
-module.exports = mongoose.model('uploads', mailboxSchema);
+module.exports = mongoose.model('mailbox', mailboxSchema);
