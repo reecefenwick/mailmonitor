@@ -17,10 +17,11 @@ var MonitorWorker = require('../src/monitor/worker');
 
 describe('Worker', function () {
 
-    var _id = "554ef91f57c0e2cf6bb78c64";
+    var _id = "55511fafeb87bd5cd98a90dc";
 
     it('should do things', function (done) {
         MonitorWorker(_id, function (err) {
+            console.log(err);
             should.not.exist(err);
 
             done();

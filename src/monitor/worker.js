@@ -155,9 +155,8 @@ var parseEmails = function(results, callback) {
 var checkEmailHealth = function(emails, callback) {
     console.log('checking email health');
     var health = {
-        low: 0,
-        medium: 0,
-        high: 0
+        warning: 0,
+        critical: 0
     };
 
     var summary = mailbox.alerts;
@@ -169,24 +168,18 @@ var checkEmailHealth = function(emails, callback) {
 
         var seconds = Math.round((timeNow-received)/1000);
 
-        if (seconds > summary.high) {
-            health.high++;
+        if (seconds > summary.critical.threshold) {
+            health.critical++;
             return done();
         }
 
-        if (seconds > summary.medium) {
-            health.medium++;
-            return done();
-        }
-
-        if (seconds > summary.low) {
-            health.low++;
+        if (seconds > summary.warning.threshold) {
+            health.warning++;
             return done();
         }
 
         done();
     }, function(err){
-        console.log('hi');
         if (err) return callback({
             step: 'checkEmailHealth',
             code: 'CHECKEMAIL',
@@ -194,44 +187,45 @@ var checkEmailHealth = function(emails, callback) {
             trace: console.trace()
         });
 
-        console.log('finished email health');
-
         callback(null, summary)
     });
 };
 
-var sendNotifications = function(summary, callback) {
+var sendNotifications = function (health, callback) {
     return callback();
 
     var action = null;
 
-    if (summary.high > 0 && Math.round((jobSummary.startTime - mailbox.lastCritical)) < 60000) {
+    if (health.critical > 0 && Math.round((jobSummary.startTime - mailbox.lastCritical) / 1000) > 3600) {
         // Send a critical alert!
-        var action = 'HIGH'
+        action = 'HIGH'
+    }
+
+    if (health.warning > 0 && Math.round((jobSummary.startTime - mailbox.lastWarning) / 1000) > 1800) {
+        if (!action) action = 'WARNING'
     }
 
 
-    var transporter = nodemailer.createTransport({
-        host: 'smtp.host',
-        port: 25
-    });
-
-    var subject = '';
-
-    var mailOptions = {
-        from: 'reece.fenwick@suncorp.com.au',
-        to: mailbox.contact,
-        subject: subject
-    };
-
-    transport.sendMail(mailOptions, function(err, info) {
-        if (err) return callback(err);
-
-        callback(null, info)
-    });
+    //var transporter = nodemailer.createTransport({
+    //    host: 'smtp.host',
+    //    port: 25
+    //});
+    //
+    //var subject = '';
+    //
+    //var mailOptions = {
+    //    from: 'reece.fenwick@suncorp.com.au',
+    //    to: mailbox.contact,
+    //    subject: subject
+    //};
+    //
+    //transport.sendMail(mailOptions, function(err, info) {
+    //    if (err) return callback(err);
+    //
+    //    callback(null, info)
+    //});
 };
 
-// This is exported - callback is optional - helps with testing
 var checkMailbox = function(_id, callback) {
     jobSummary.startTime = new Date();
     mailbox._id = _id;
@@ -254,7 +248,7 @@ var checkMailbox = function(_id, callback) {
 
         if (err) {
             callback(err);
-            logger.error('CHECKMAILBOX', err);
+            logger.error('error', err);
             return;
         }
 

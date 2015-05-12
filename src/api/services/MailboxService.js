@@ -14,8 +14,8 @@ module.exports.create = function(params, callback) {
 
     mailbox.save(function (err, doc) {
         if (err) return callback({
-            status: err.name === 'ValidationError' ? 400 : 500,
-            message: err.name === 'ValidationError' ? 'There was a validation error' : 'An internal server error has occurred.',
+            status: (err.name === 'ValidationError' || err.name === 'CastError') ? 400 : 500,
+            message: (err.name === 'ValidationError' || err.name === 'CastError') ? 'There was a validation error' : 'An internal server error has occurred.',
             error: err
         });
 
@@ -28,8 +28,8 @@ module.exports.findOne = function(params, scope, callback) {
         _id: params._id
     }, function (err, doc) {
         if (err) return callback({
-            status: err.name === 'ValidationError' ? 400 : 500,
-            message: err.name === 'ValidationError' ? err : 'An internal server error has occurred.',
+            status: (err.name === 'ValidationError' || err.name === 'CastError') ? 400 : 500,
+            message: (err.name === 'ValidationError' || err.name === 'CastError') ? err : 'An internal server error has occurred.',
             error: err
         });
 
@@ -50,8 +50,8 @@ module.exports.search = function(query, scope, options, callback) {
         .skip(options.skip)
         .exec(function(err, docs) {
             if (err) return callback({
-                status: err.name === 'ValidationError' ? 400 : 500,
-                message: err.name === 'ValidationError' ? err : 'An internal server error has occurred.',
+                status: (err.name === 'ValidationError' || err.name === 'CastError') ? 400 : 500,
+                message: (err.name === 'ValidationError' || err.name === 'CastError') ? err : 'An internal server error has occurred.',
                 error: err
             });
 
@@ -62,8 +62,8 @@ module.exports.search = function(query, scope, options, callback) {
 module.exports.update = function(query, update, callback) {
     Mailbox.findOneAndUpdate(query, update, function(err, doc) {
         if (err) return callback({
-            status: err.name === 'ValidationError' ? 400 : 500,
-            message: err.name === 'ValidationError' ? err : 'An internal server error has occurred.',
+            status: (err.name === 'ValidationError' || err.name === 'CastError') ? 400 : 500,
+            message: (err.name === 'ValidationError' || err.name === 'CastError') ? err : 'An internal server error has occurred.',
             error: err
         });
 
@@ -78,8 +78,8 @@ module.exports.remove = function(params, callback) {
         })
         .exec(function(err, doc) {
             if (err) return callback({
-                status: err.name === 'ValidationError' ? 400 : 500,
-                message: err.name === 'ValidationError' ? err : 'An internal server error has occurred.',
+                status: (err.name === 'ValidationError' || err.name === 'CastError') ? 400 : 500,
+                message: (err.name === 'ValidationError' || err.name === 'CastError') ? err : 'An internal server error has occurred.',
                 error: err
             });
 

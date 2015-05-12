@@ -46,7 +46,6 @@ module.exports.search = function(req, res, next) {
 
     Mailbox.search(query, scope, options, function(err, docs) {
         if (err) return next(err);
-        docs[0].active = false;
         res.status(200).json(docs);
     })
 };

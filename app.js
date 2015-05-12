@@ -96,6 +96,11 @@ app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
 
+// Allow for page refresh with angular
+app.use(function (req, res) {
+    res.redirect('/#' + req.originalUrl);
+});
+
 // 404 Handler
 app.use(function(req, res, next) {
     next({

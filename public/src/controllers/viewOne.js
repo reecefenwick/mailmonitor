@@ -37,21 +37,21 @@ angular.module('MyApp')
         $scope.updateMailbox = function () {
             $http({
                 url: '/api/mailbox/' + $routeParams._id,
-                method: 'PUT'
+                method: 'PUT',
+                data: $scope.mailbox
             })
                 .success(function () {
                     $alert({
-                        content: 'Deleted ' + $scope.mailbox.name,
+                        content: 'Updated ' + $scope.mailbox.name,
                         animation: 'fadeZoomFadeDown',
                         type: 'material',
                         duration: 3
                     });
-                    $location.path('/')
                 })
                 .error(function (err) {
                     $alert({
                         title: 'Error!',
-                        content: 'Unable to delete the mailbox.',
+                        content: 'Unable to update the mailbox.',
                         animation: 'fadeZoomFadeDown',
                         type: 'material',
                         duration: 3

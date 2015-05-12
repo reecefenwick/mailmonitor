@@ -1,17 +1,94 @@
 <div class="container">
     <div class="panel panel-default">
-        <div class="panel-heading">Create an Upload</div>
+        <div class="panel-heading">Add a Mailbox</div>
         <div class="panel-body">
-            <form class="form" method="post" ng-submit="addTask()" name="taskForm">
-                <h4>Description</h4>
+            <form class="form" method="post" ng-submit="addMailbox()" name="mailboxForm">
+                <h4>Name</h4>
 
                 <div class="form-group"
-                     ng-class="{ 'has-error' : taskForm.showName.$invalid && taskForm.showName.$dirty }">
-                    <input class="form-control" type="text" name="description" ng-model="description"
-                           placeholder="Enter a description for your upload, eg. Tax documents for Rick" required
+                     ng-class="{ 'has-error' : mailboxForm.showName.$invalid && mailboxForm.showName.$dirty }">
+                    <input class="form-control" type="text" name="description" ng-model="name"
+                           placeholder="What is this mailbox for?" required
                            autofocus>
                 </div>
-                <button class="btn btn-primary" type="submit" ng-disabled="taskForm.$invalid">Create</button>
+
+                <h4>Mailbox Details</h4>
+                <h5>Username</h5>
+
+                <div class="form-group"
+                     ng-class="{ 'has-error' : mailboxForm.showName.$invalid && mailboxForm.showName.$dirty }">
+                    <input class="form-control" type="text" name="username" ng-model="username"
+                           placeholder="What is the mailbox username?" required
+                           autofocus>
+                </div>
+                <h5>Password</h5>
+
+                <div class="form-group"
+                     ng-class="{ 'has-error' : mailboxForm.showName.$invalid && mailboxForm.showName.$dirty }">
+                    <input class="form-control" type="text" name="description" ng-model="password"
+                           placeholder="What is the password to the mailbox account?" required
+                           autofocus>
+                </div>
+                <h5>Folder to Monitor</h5>
+
+                <div class="form-group"
+                     ng-class="{ 'has-error' : mailboxForm.showName.$invalid && mailboxForm.showName.$dirty }">
+                    <input class="form-control" type="text" name="description" ng-model="folder"
+                           placeholder="What folder should be monitored?" required
+                           autofocus>
+                </div>
+                <h4>Alert Thresholds</h4>
+                <h5>Warning - Threshold</h5>
+
+                <div class="form-group"
+                     ng-class="{ 'has-error' : mailboxForm.showName.$invalid && mailboxForm.showName.$dirty }">
+                    <input class="form-control" type="text" name="description" ng-model="warning.threshold"
+                           placeholder="The age of an email that will trigger a warning - in seconds e.g. 30000"
+                           required
+                           autofocus>
+                </div>
+                <h5>Warning - Email Recipient</h5>
+
+                <div class="form-group"
+                     ng-class="{ 'has-error' : mailboxForm.showName.$invalid && mailboxForm.showName.$dirty }">
+                    <input class="form-control" type="text" name="description" ng-model="warning.email"
+                           placeholder="Who do we email warnings to?" required
+                           autofocus>
+                </div>
+                <h5>Critical - Threshold</h5>
+
+                <div class="form-group"
+                     ng-class="{ 'has-error' : mailboxForm.showName.$invalid && mailboxForm.showName.$dirty }">
+                    <input class="form-control" type="text" name="description" ng-model="critical.threshold"
+                           placeholder="The age of an email that will trigger a critical alert - in seconds e.g. 60000"
+                           required
+                           autofocus>
+                </div>
+                <h5>Critical - Email Recipient</h5>
+
+                <div class="form-group"
+                     ng-class="{ 'has-error' : mailboxForm.showName.$invalid && mailboxForm.showName.$dirty }">
+                    <input class="form-control" type="text" name="description" ng-model="critical.email"
+                           placeholder="Who do we email warnings to?" required
+                           autofocus>
+                </div>
+                <h5>Critical - SMS Recipient</h5>
+
+                <div class="form-group"
+                     ng-class="{ 'has-error' : mailboxForm.showName.$invalid && mailboxForm.showName.$dirty }">
+                    <input class="form-control" type="text" name="description" ng-model="critical.mobile"
+                           placeholder="Who do we send critical SMS alerts to? - e.g 0417519358" required
+                           autofocus>
+                </div>
+                <h4>Activate Immediately?</h4>
+
+                <div class="form-group"
+                     ng-class="{ 'has-error' : mailboxForm.showName.$invalid && mailboxForm.showName.$dirty }">
+                    <input type="checkbox" name="vehicle" ng-model="activate">
+                </div>
+                <button class="btn btn-primary" type="submit" ng-click='resetForm()'
+                        ng-disabled="mailboxForm.$invalid">Submit
+                </button>
             </form>
         </div>
     </div>

@@ -35,7 +35,7 @@ var job = function(callback) {
         }
 
         // For loop - but only 5 at a time - using async
-        async.eachLimit(docs, 1, function(mailbox, done) {
+        async.eachLimit(docs, 5, function (mailbox, done) {
             try {
                 CheckMailbox(mailbox._id, done)
             } catch(e) {
