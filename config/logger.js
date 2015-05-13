@@ -38,7 +38,7 @@ var logger = {
         transports: [
             new(winston.transports.Console)(options),
             new(winston.transports.File)({
-                filename: '../logs/' + name + '.development.log'
+                filename: name + '.development.log'
 
             })
         ],

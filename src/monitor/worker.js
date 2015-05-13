@@ -5,22 +5,21 @@
  * @help        ::
  */
 
+// Core Libraries
 var Imap = require('imap');
 var async = require('async');
-
-var nodemailer = require('nodemailer');
-var smtpTransport = require('nodemailer-smtp-transport');
-
-var Mailbox = require('../api/services/MailboxService');
 var logger = require('../../config/logger');
+
+// Services
+var Mailbox = require('../api/services/MailboxService');
+var Notify = require('../libs/notify');
 
 var mailbox = {};
 var imap = {};
-
 var jobSummary = {};
 
 var getMailboxConfig = function(callback) {
-    console.log('getting mailbox config %s', mailbox._id);
+    logger.info('Searching for mailbox config', {mailbox: mailbox._id});
     Mailbox.findOne({ _id: mailbox._id }, {}, function(err, doc) {
         if (err) return callback({
             step: 'getMailboxConfig',
@@ -42,7 +41,7 @@ var getMailboxConfig = function(callback) {
 };
 
 var getEmails = function(callback) {
-    console.log('connecting to mailbox');
+    // This can be simplified significantly once this pull request is merged - https://github.com/chirag04/mail-listener2/pull/40
     imap = new Imap({
         user: mailbox.props.username,
         password: mailbox.props.password,
@@ -62,9 +61,11 @@ var getEmails = function(callback) {
 
             jobSummary.totalMsgs = box.messages.total;
 
-            console.log('%s messages in %s', jobSummary.totalMsgs, mailbox.props.folder);
+            logger.info('Opened %s folder, %s messages in total', mailbox.props.folder, jobSummary.totalMsgs, {
+                mailbox: mailbox._id
+            });
 
-            imap.search(["UNSEEN"], function(err, results) {
+            imap.search([""], function (err, results) {
                 if (err) return callback({
                     step: 'getEmails',
                     code: 'SEARCH',
@@ -82,8 +83,6 @@ var getEmails = function(callback) {
         // This is to get around some weird "bug"? - ECONNRESET means it was killed by the client
         if (err.code && err.code === 'ECONNRESET') return;
 
-        console.error('Error with mailbox %s - Error: %s', mailbox._id, err);
-
         callback({
             step: 'getEmails',
             code: 'IMAPERROR',
@@ -94,13 +93,15 @@ var getEmails = function(callback) {
     });
 
     imap.once('end', function() {
-        console.log('Connection ended to mailbox %s', mailbox.name);
+        logger.info('Connection to mailbox %s ended', mailbox.name, {mailbox: mailbox._id});
     });
 
+    logger.info('Connecting to mailbox', {mailbox: mailbox._id});
     imap.connect();
 };
 
 var parseEmails = function(results, callback) {
+    logger.info('Parsing emails', {mailbox: _id});
     var emails = [];
 
     async.each(results, function(result, done) {
@@ -142,7 +143,6 @@ var parseEmails = function(results, callback) {
         });
     }, function(err) {
         if (err) {
-            console.log('Error parsing emails');
             return callback(err);
         }
 
@@ -153,7 +153,8 @@ var parseEmails = function(results, callback) {
 };
 
 var checkEmailHealth = function(emails, callback) {
-    console.log('checking email health');
+    logger.info('Assessing email health', {mailbox: mailbox._id});
+
     var health = {
         warning: 0,
         critical: 0
@@ -192,47 +193,58 @@ var checkEmailHealth = function(emails, callback) {
 };
 
 var sendNotifications = function (health, callback) {
-    return callback();
-
     var action = null;
 
     if (health.critical > 0 && Math.round((jobSummary.startTime - mailbox.lastCritical) / 1000) > 3600) {
         // Send a critical alert!
-        action = 'HIGH'
+        action = 'CRITICAL'
     }
 
     if (health.warning > 0 && Math.round((jobSummary.startTime - mailbox.lastWarning) / 1000) > 1800) {
         if (!action) action = 'WARNING'
     }
 
+    var emailContent = {
+        from: 'reece.fenwick@suncorp.com.au'
+    };
 
-    //var transporter = nodemailer.createTransport({
-    //    host: 'smtp.host',
-    //    port: 25
-    //});
-    //
-    //var subject = '';
-    //
-    //var mailOptions = {
-    //    from: 'reece.fenwick@suncorp.com.au',
-    //    to: mailbox.contact,
-    //    subject: subject
-    //};
-    //
-    //transport.sendMail(mailOptions, function(err, info) {
-    //    if (err) return callback(err);
-    //
-    //    callback(null, info)
-    //});
+    if (action === 'CRITICAL') {
+        emailContent.to = mailbox.alerts.critical.email; // Can we add SMS # here?
+        emailContent.subject = 'Mailbox Monitor - Critical Alert for mailbox' + mailbox.name;
+        emailContent.message = '';
+    }
+
+    if (action === 'WARNING') {
+        emailContent.to = mailbox.alerts.warning.email; // Can we add SMS # here?
+        emailContent.subject = 'Mailbox Monitor - Warning for mailbox' + mailbox.name;
+        emailContent.message = '';
+    }
+
+    if (!action) {
+        jobSummary.action = null;
+        return callback();
+    }
+
+    Notify.sendEmail(emailContent, function (err) {
+        if (err) return callback({
+            step: 'sendNotifications',
+            info: 'Error sending notifications',
+            trace: console.trace()
+        });
+
+        logger.error('Error sending notification', err);
+        callback();
+    })
 };
 
 var checkMailbox = function(_id, callback) {
+    jobSummary.mailbox = _id;
     jobSummary.startTime = new Date();
     mailbox._id = _id;
 
     if(typeof callback === 'undefined') throw Error('No callback provided');
-
-    //console.log('CHECKMAILBOX', {});
+    console.log(_id);
+    logger.info('Starting mailbox health check %s', _id, {mailbox: mailbox._id});
 
     async.waterfall([
         getMailboxConfig,
@@ -240,16 +252,16 @@ var checkMailbox = function(_id, callback) {
         parseEmails,
         checkEmailHealth,
         sendNotifications
-    ], function (err, summary) {
+    ], function (err) {
         jobSummary.finishTime = new Date();
         jobSummary.totalTime = Math.round((jobSummary.finishTime-jobSummary.startTime)/1000);
 
         logger.info('Completed processing %s in %s seconds', mailbox.name, jobSummary.totalTime);
 
         if (err) {
-            callback(err);
+            err.mailbox = mailbox._id;
             logger.error('error', err);
-            return;
+            return callback(err);
         }
 
         callback();

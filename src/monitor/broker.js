@@ -7,14 +7,11 @@
 
 var async = require('async');
 var logger = require('../../config/logger');
-var uuid = require('node-uuid');
 
 var Mailbox = require('../api/services/MailboxService');
 var CheckMailbox = require('./worker');
 
 var job = function(callback) {
-    var jobId = uuid.v1();
-
     var query = {
         active: true
     };
@@ -35,14 +32,21 @@ var job = function(callback) {
         }
 
         // For loop - but only 5 at a time - using async
-        async.eachLimit(docs, 5, function (mailbox, done) {
+        async.eachLimit(docs, 1, function (mailbox, done) {
             try {
-                CheckMailbox(mailbox._id, done)
+                CheckMailbox(mailbox._id, function () {
+                    if (err) {
+                        console.log('elaihgealhgeag', err);
+                    }
+                    done();
+                })
             } catch(e) {
                 logger.error('CheckMailbox', {
                     error: e,
                     trace: console.trace()
-                })
+                });
+
+                done();
             }
         }, function(err) {
             if (err) {

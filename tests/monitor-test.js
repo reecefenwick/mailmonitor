@@ -15,30 +15,30 @@ mongoose.connection.on('open', function () {
 var MonitorBroker = require('../src/monitor/broker');
 var MonitorWorker = require('../src/monitor/worker');
 
-describe('Worker', function () {
-
-    var _id = "55511fafeb87bd5cd98a90dc";
-
-    it('should do things', function (done) {
-        MonitorWorker(_id, function (err) {
-            console.log(err);
-            should.not.exist(err);
-
-            done();
-        })
-    });
-    //it('should fail with an authorization error', function (done) {
-    //    config.credentials.username = '';
-    //    MonitorWorker(config, function (err) {
-    //        should.exist(err);
-    //
-    //        done();
-    //    })
-    //})
-});
-
-//describe('blabla', function() {
-//    it('should do things', function(done) {
-//        MonitorBroker(done)
-//    })
+//describe('Worker', function () {
+//
+//    var _id = "5551db11ddb797a70e29ce63";
+//
+//    it('should do things', function (done) {
+//        MonitorWorker(_id, function (err) {
+//            console.log(err);
+//            should.not.exist(err);
+//
+//            done();
+//        })
+//    });
+//    //it('should fail with an authorization error', function (done) {
+//    //    config.credentials.username = '';
+//    //    MonitorWorker(config, function (err) {
+//    //        should.exist(err);
+//    //
+//    //        done();
+//    //    })
+//    //})
 //});
+
+describe('blabla', function () {
+    it('should do things', function (done) {
+        MonitorBroker(done)
+    })
+});

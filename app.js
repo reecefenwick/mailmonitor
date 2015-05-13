@@ -12,7 +12,7 @@ var express = require('express');
 var path = require('path');
 var logger = require('./config/logger');
 var bodyParser = require('body-parser');
-var authParser = require('./src/api/libs/authParser');
+var authParser = require('./src/libs/authParser');
 
 // Extra Libraries
 var uuid = require('node-uuid');
