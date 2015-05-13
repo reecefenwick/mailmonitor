@@ -6,7 +6,7 @@
  */
 
 var Agenda = require('agenda');
-
+var logger = require('./logger');
 var agenda = new Agenda({db: { address: 'localhost:27017/mailmonitor'}});
 
 // Load scheduled job libs
@@ -19,7 +19,7 @@ var options = {
 };
 
 agenda.define('check mailboxes', options, function(job, done) {
-    console.log(job.attrs); // Worth logging
+    logger.info(job.attrs);
     CheckMailbox(done);
 });
 
