@@ -9,7 +9,7 @@ var async = require('async');
 var logger = require('../../config/logger');
 
 var Mailbox = require('../api/services/MailboxService');
-var CheckMailbox = require('./worker');
+var CheckMailbox = require('../libs/monitor/worker');
 
 var job = function(callback) {
     var query = {
@@ -31,7 +31,7 @@ var job = function(callback) {
             return callback();
         }
 
-        // For loop - but only 5 at a time - using async
+        // For loop - but only 1 at a time - using async
         async.eachLimit(docs, 1, function (mailbox, done) {
             try {
                 CheckMailbox(mailbox._id, function () {

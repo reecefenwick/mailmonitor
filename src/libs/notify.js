@@ -7,19 +7,23 @@
  */
 
 var nodemailer = require('nodemailer');
-var smtpTransport = require('nodemailer-smtp-transport');
+
 
 module.exports.sendEmail = function (mailOptions, callback) {
+    return callback();
+
     if (typeof callback !== 'function') throw Error('No callback provided');
 
-    var transporter = nodemailer.createTransport(smtpTransport({
+    var transporter = nodemailer.createTransport('SMTP', {
         host: "smlstp.suncorpmetway.net",
         port: 25
-    }));
+    });
 
     transporter.sendMail(mailOptions, function (err, info) {
-        if (err) return console.log(err);
+        if (err) return callback(err);
 
-        console.log('Message sent: ' + info.response)
+        console.log('Message sent: ' + info.response);
+
+        callback(null, info);
     })
 };

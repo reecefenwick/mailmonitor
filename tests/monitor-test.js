@@ -12,33 +12,34 @@ mongoose.connection.on('open', function () {
     console.log('Connected to the database');
 });
 
-var MonitorBroker = require('../src/monitor/broker');
-var MonitorWorker = require('../src/monitor/worker');
+var MonitorJob = require('../src/jobs/CheckMailboxes');
 
-//describe('Worker', function () {
-//
-//    var _id = "5551db11ddb797a70e29ce63";
-//
-//    it('should do things', function (done) {
-//        MonitorWorker(_id, function (err) {
-//            console.log(err);
-//            should.not.exist(err);
-//
-//            done();
-//        })
-//    });
-//    //it('should fail with an authorization error', function (done) {
-//    //    config.credentials.username = '';
-//    //    MonitorWorker(config, function (err) {
-//    //        should.exist(err);
-//    //
-//    //        done();
-//    //    })
-//    //})
-//});
+var CheckMailbox = require('../src/libs/monitor/worker');
 
-describe('blabla', function () {
+describe('Worker', function () {
+    // TODO - Search  database first
+    var _id = "55542511fb70772360e900e5";
+
     it('should do things', function (done) {
-        MonitorBroker(done)
-    })
+        CheckMailbox(_id, function (err) {
+            if (err) console.log(err);
+            should.not.exist(err);
+
+            done();
+        })
+    });
+    //it('should fail with an authorization error', function (done) {
+    //    config.credentials.username = '';
+    //    MonitorWorker(config, function (err) {
+    //        should.exist(err);
+    //
+    //        done();
+    //    })
+    //})
 });
+
+//describe('blabla', function () {
+//    it('should do things', function (done) {
+//        MonitorJob(done)
+//    })
+//});

@@ -8,11 +8,11 @@
 // Core Libraries
 var Imap = require('imap');
 var async = require('async');
-var logger = require('../../config/logger');
+var logger = require('../../../config/logger');
 
 // Services
-var Mailbox = require('../api/services/MailboxService');
-var Notify = require('../libs/notify');
+var Mailbox = require('../../api/services/MailboxService');
+var Notify = require('../../libs/notify');
 
 var mailbox = {};
 var imap = {};
@@ -65,7 +65,7 @@ var getEmails = function(callback) {
                 mailbox: mailbox._id
             });
 
-            imap.search([""], function (err, results) {
+            imap.search(["UNSEEN"], function (err, results) {
                 if (err) return callback({
                     step: 'getEmails',
                     code: 'SEARCH',
@@ -101,7 +101,7 @@ var getEmails = function(callback) {
 };
 
 var parseEmails = function(results, callback) {
-    logger.info('Parsing emails', {mailbox: _id});
+    logger.info('Parsing emails', {mailbox: mailbox._id});
     var emails = [];
 
     async.each(results, function(result, done) {
@@ -212,6 +212,7 @@ var sendNotifications = function (health, callback) {
         emailContent.to = mailbox.alerts.critical.email; // Can we add SMS # here?
         emailContent.subject = 'Mailbox Monitor - Critical Alert for mailbox' + mailbox.name;
         emailContent.message = '';
+
     }
 
     if (action === 'WARNING') {
@@ -232,6 +233,20 @@ var sendNotifications = function (health, callback) {
             trace: console.trace()
         });
 
+        var temp = action === 'CRITICAL' ? 'alerts.critical.lastCritical' : 'alerts.warning.lastWarning';
+
+        var query = {_id: mailbox._id};
+
+        update[temp] = new Date();
+
+        Mailbox.update(query, update, function (err) {
+            console.log(err);
+            if (err) return callback(err);
+
+            console.log('updated');
+
+        });
+
         logger.error('Error sending notification', err);
         callback();
     })
@@ -243,7 +258,7 @@ var checkMailbox = function(_id, callback) {
     mailbox._id = _id;
 
     if(typeof callback === 'undefined') throw Error('No callback provided');
-    console.log(_id);
+
     logger.info('Starting mailbox health check %s', _id, {mailbox: mailbox._id});
 
     async.waterfall([
