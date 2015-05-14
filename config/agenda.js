@@ -10,7 +10,7 @@ var logger = require('./logger');
 var agenda = new Agenda({db: { address: 'localhost:27017/mailmonitor'}});
 
 // Load scheduled job libs
-var CheckMailbox = require('../src/monitor/broker');
+var CheckMailbox = require('../src/jobs/CheckMailboxes');
 
 console.log('agenda');
 

@@ -12,7 +12,7 @@ var logger = require('../../../config/logger');
 
 // Services
 var Mailbox = require('../../api/services/MailboxService');
-var Notify = require('../../libs/notify');
+var Notify = require('./notify');
 
 var mailbox = {};
 var imap = {};
@@ -237,6 +237,7 @@ var sendNotifications = function (health, callback) {
 
         var query = {_id: mailbox._id};
 
+        // Bad global below
         update[temp] = new Date();
 
         Mailbox.update(query, update, function (err) {
@@ -272,6 +273,8 @@ var checkMailbox = function(_id, callback) {
         jobSummary.totalTime = Math.round((jobSummary.finishTime-jobSummary.startTime)/1000);
 
         logger.info('Completed processing %s in %s seconds', mailbox.name, jobSummary.totalTime);
+
+        // Store summary
 
         if (err) {
             err.mailbox = mailbox._id;

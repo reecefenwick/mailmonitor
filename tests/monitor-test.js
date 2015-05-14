@@ -14,7 +14,7 @@ mongoose.connection.on('open', function () {
 
 var MonitorJob = require('../src/jobs/CheckMailboxes');
 
-var CheckMailbox = require('../src/libs/monitor/worker');
+var CheckMailbox = require('./monitor/worker');
 
 describe('Worker', function () {
     // TODO - Search  database first
