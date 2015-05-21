@@ -260,7 +260,7 @@ var checkMailbox = function(_id, callback) {
 
     if(typeof callback === 'undefined') throw Error('No callback provided');
 
-    logger.info('Starting mailbox health check %j', _id);
+    logger.info('Starting mailbox health check %j', _id.toString());
 
     async.waterfall([
         getMailboxConfig,
@@ -281,9 +281,7 @@ var checkMailbox = function(_id, callback) {
             callback();
         }
 
-        // Store job summary
-
-        console.log(summary);
+        // Store run summary
 
         var query = {_id: _id};
         var update = {
