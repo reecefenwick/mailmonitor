@@ -43,11 +43,27 @@ var mailboxSchema = new Schema({
             lastCritical: { type: Date, required: false, default: null }
         }
     },
+    history: [
+        {
+            "_id": false,
+            "success": {type: Boolean, required: true},
+            "startTime": {type: Date, required: true},
+            "finishTime": {type: Date, required: true},
+            "health": {
+                "warning": {type: Number, required: true, default: 0},
+                "critical": {type: Number, required: true, default: 0}
+            },
+            "totalEmails": {type: Number},
+            "error": {}
+        }
+    ],
     active: {
         type: Boolean,
         require: true,
         default: false
-    }
+    },
+    createdAt: Date,
+    updatedAt: Date
 });
 
 mailboxSchema.pre('save', function(next) {

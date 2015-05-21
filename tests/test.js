@@ -28,28 +28,7 @@ describe('GET /', function() {
 
 describe('POST /mailbox', function() {
     it('responds successfully with object id', function(done) {
-        var body = {
-            name: 'EasySuiteTest@suncorp.com.au',
-            props: {
-                username: 'fenwickreece08@gmail.com',
-                password: 'yenc8A32e',
-                folder: 'INBOX'
-            },
-            alerts: {
-                warning: {
-                    email: 'fenwickreece08@gmail.com',
-                    threshold: 600,
-                    lastWarning: null
-                },
-                critical: {
-                    email: 'escalationemail@notarealdomain.donkey',
-                    mobile: '0414472534',
-                    threshold: 6000,
-                    lastCritical: null
-                }
-            },
-            active: true
-        };
+        var body = require('./data/mailbox-data');
 
         request(app)
             .post(basePath + '/mailbox')
@@ -140,6 +119,6 @@ describe('PUT /mailbox/:_id', function() {
 //        request(app)
 //            .del(basePath + '/mailbox/' + mailbox._id)
 //            .expect('Content-Type', /json/)
-//            .expect(200, done);
+//            .expect(204, done);
 //    })
 //});

@@ -9,7 +9,7 @@ var async = require('async');
 var logger = require('../../config/logger');
 
 var Mailbox = require('../api/services/MailboxService');
-var CheckMailbox = require('./monitor/worker');
+var CheckMailbox = require('../shared/monitor/worker');
 
 var job = function(callback) {
     var query = {

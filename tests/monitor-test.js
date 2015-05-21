@@ -13,15 +13,28 @@ mongoose.connection.on('open', function () {
 });
 
 var MonitorJob = require('../src/jobs/CheckMailboxes');
+var CheckMailbox = require('../src/shared/monitor/worker');
 
-var CheckMailbox = require('./monitor/worker');
+// Services
+var Mailbox = require('../src/api/services/MailboxService');
 
 describe('Worker', function () {
-    // TODO - Search  database first
-    var _id = "55542511fb70772360e900e5";
+    var mailbox = require('./data/mailbox-data');
+
+    before(function (done) {
+        Mailbox.create(mailbox, function (err, doc) {
+            if (err) {
+                console.log(err);
+                throw Error(err);
+            }
+
+            mailbox = doc;
+            done();
+        })
+    });
 
     it('should do things', function (done) {
-        CheckMailbox(_id, function (err) {
+        CheckMailbox(mailbox._id, function (err) {
             if (err) console.log(err);
             should.not.exist(err);
 
