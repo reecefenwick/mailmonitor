@@ -1,0 +1,200 @@
+FORMAT: 1A
+
+# Mailbox Monitoring API
+This service is for monitoring email ingestion processes, either in a mailbox or on a network folder.
+
+# Operations
+We use RESTful verbs for all operations and methods.
+
+| Verb   | Description |
+| ---    | --- |
+|`GET`   |Used to select one or more items. Success returns 200 status code with json result item(s) in body.|
+|`POST`  |Used to create a new item. Success returns 201 status code with newly created json item in body.|
+|`PUT`   |Used to update an item. Success returns 200 status code with updated json item in body.|
+|`DELETE`|Used to delete an item. Success returns 204 status code with no body.|
+
+
+# Status Codes
+We'll respond with one of the following status codes.
+
+| Code| Description |
+| --- | --- |
+|`200`| Success. Request completed. |
+|`201`| Success. New resource created. |
+|`204`| Success. No content to return. Only the status code returns. |
+|`400`| Bad Request - The request could not be parsed. |
+|`401`| Unauthorized - cannot authenticate consumer. |
+|`403`| Forbidden - current authenticated consumer is not authorized to access resource. |
+|`404`| Not Found - resource doesn't exist. |
+|`422`| Unprocessable Entity - The request could not be parsed due to validation errors. |
+|`429`| Rate limit exceeded, try again later. |
+|`500`| Server error. |
+|`503`| Service unavailable. |
+
+## Authentication
+
+Currently no authentication.
+
+## Request Rate Limiting
+
+Currently there is no limit on requests.
+
+# Mailbox Monitor API Root [/]
+
+This resource does not have any attributes. Instead it offers the initial
+API affordances in the form of the links in the JSON body.
+
+It is recommend to follow the “url” link values,
+[Link](https://tools.ietf.org/html/rfc5988) or Location headers where
+applicable to retrieve resources. Instead of constructing your own URLs,
+to keep your client decoupled from implementation details.
+
+## Retrieve the Entry Point [GET]
+
++ Response 200 (application/json)
+
+        {
+            "mailbox_url": "/mailbox"
+        }
+
+# Group Mailboxes
+Mailbox related resources of the **MailMonitor API**
+
+## Mailbox Collection [/api/mailbox]
+### View all mailboxes [GET]
+Search for mailboxes, optionally provide a JSON payload with search criteria
++ Request (application/json)
+
+        {
+            "active": true,
+            "props": {
+                "username": "BoxUser"
+            }
+        }
+
++ Response 200 (application/json)
+
+        [{
+             "_id": "55542511fb70772360e900e5",
+             "name": "Personal Mailbox",
+             "props": {
+                "username": "BoxUser",
+                "password": "BoxPassword"
+             },
+             "alerts" : {
+                "critical" : {
+                    "threshold" : 6000,
+                    "lastCritical" : null,
+                    "mobile" : 414472534,
+                    "email" : "criticalrecipient@notarealdomain.donkey"
+                },
+                "warning" : {
+                    "threshold" : 600,
+                    "lastWarning" : null,
+                    "email" : "warningrecipient@notarealdomain.donkey"
+                }
+            },
+            "active": true
+        }]
+
+### Add a new mailbox [POST]
+Add a new mailbox to be monitored, with optional activation
++ Request (application/json)
+
+        {
+             "name": "Personal Mailbox",
+             "props": {
+                "username": "BoxUser",
+                "password": "BoxPassword"
+             },
+             "alerts" : {
+                "critical" : {
+                    "threshold" : 6000,
+                    "lastCritical" : null,
+                    "mobile" : 414472534,
+                    "email" : "criticalrecipient@notarealdomain.donkey"
+                },
+                "warning" : {
+                    "threshold" : 600,
+                    "lastWarning" : null,
+                    "email" : "warningrecipient@notarealdomain.donkey"
+                }
+            },
+            "active": true
+        }
+
++ Response 201 (application/json)
+
+        {
+             "_id": "55542511fb70772360e900e5"
+        }
+
+
+## Mailbox [/mailbox/{id}]
+A single Mailbox object with all its details
+
++ Parameters
+    + id (required, number, `55542511fb70772360e900e5`) ... Alphanumeric `id` of the Mailbox to perform action with. Has example value.
+
+### Retrieve Mailbox details [GET]
++ Response 200 (application/json)
+
+        {
+             "name": "Personal Mailbox",
+             "props": {
+                "username": "BoxUser",
+                "password": "BoxPassword"
+             },
+             "alerts" : {
+                "critical" : {
+                    "threshold" : 6000,
+                    "lastCritical" : null,
+                    "mobile" : 414472534,
+                    "email" : "criticalrecipient@notarealdomain.donkey"
+                },
+                "warning" : {
+                    "threshold" : 600,
+                    "lastWarning" : null,
+                    "email" : "warningrecipient@notarealdomain.donkey"
+                }
+            },
+            "active": true
+        }
+
+
+### Update the mailbox [PUT]
++ Request (application/json)
+
+        {
+            "props": {
+                "username": "NewUserName"
+            },
+            "active": false
+        }
+
++ Response 200 (application/json)
+
+        {
+             "name": "Personal Mailbox",
+             "props": {
+                "username": "NewUserName",
+                "password": "BoxPassword"
+             },
+             "alerts" : {
+                "critical" : {
+                    "threshold" : 6000,
+                    "lastCritical" : null,
+                    "mobile" : 414472534,
+                    "email" : "criticalrecipient@notarealdomain.donkey"
+                },
+                "warning" : {
+                    "threshold" : 600,
+                    "lastWarning" : null,
+                    "email" : "warningrecipient@notarealdomain.donkey"
+                }
+            },
+            "active": false
+        }
+
+### Delete a Mailbox [DELETE]
++ Response 204
