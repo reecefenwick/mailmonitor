@@ -188,19 +188,19 @@ var checkEmailHealth = function(emails, callback) {
         });
         summary.health = health;
 
-        callback(null, results)
+        callback(null, health)
     });
 };
 
 var sendNotifications = function (health, callback) {
     var action = null;
 
-    if (health.critical > 0 && Math.round((summary.startTime - mailbox.lastCritical) / 1000) > 3600) {
+    if (health.critical > 0 && Math.round((summary.startTime - mailbox.alerts.critical.lastCritical) / 1000) > 3600) {
         // Send a critical alert!
         action = 'CRITICAL'
     }
 
-    if (health.warning > 0 && Math.round((summary.startTime - mailbox.lastWarning) / 1000) > 1800) {
+    if (health.warning > 0 && Math.round((summary.startTime - mailbox.alerts.warning.lastWarning) / 1000) > 1800) {
         if (!action) action = 'WARNING'
     }
 

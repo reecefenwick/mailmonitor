@@ -10,12 +10,10 @@ var nodemailer = require('nodemailer');
 
 
 module.exports.sendEmail = function (mailOptions, callback) {
-    return callback();
-
     if (typeof callback !== 'function') throw Error('No callback provided');
 
     var transporter = nodemailer.createTransport('SMTP', {
-        host: "smlstp.suncorpmetway.net",
+        host: "smlsmtp.suncorpmetway.net",
         port: 25
     });
 
