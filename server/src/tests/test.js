@@ -8,7 +8,7 @@
 var request = require('supertest');
 var should = require('chai').should(); // Assertion library - extends the Object.prototype
 
-var app = require('../app');
+var app = require('../../app');
 
 var basePath = '/api';
 

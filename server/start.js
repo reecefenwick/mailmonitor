@@ -11,7 +11,7 @@
  * Module dependencies.
  */
 
-var app = require('../app');
+var app = require('./app');
 var http = require('http');
 var fs = require('fs');
 

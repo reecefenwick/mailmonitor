@@ -9,10 +9,9 @@
 
 // Core Middleware
 var express = require('express');
-var path = require('path');
 var logger = require('./config/logger');
 var bodyParser = require('body-parser');
-var authParser = require('./src/shared/authParser');
+var authParser = require('express-auth-parser');
 
 // Extra Libraries
 var uuid = require('node-uuid');
@@ -41,7 +40,7 @@ var app = express();
 var routes = require('./config/routes');
 
 // Capture request start time
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     req.start = Date.now();
     next();
 });
@@ -51,24 +50,24 @@ app.use(compress());
 
 // Parse incoming request
 app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({ extended: false }));
+app.use(bodyParser.urlencoded({extended: false}));
 app.use(authParser);
 
 // Disable
 app.set('x-powered-by', false);
 
 // Generate UUID for request
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     req.id = uuid.v4();
     res.set('requestID', req.id);
     next();
 });
 
 // Bind to incoming request and log when closed
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     // Log request
     // Listen for response event and log
-    res.on('finish', function() {
+    res.on('finish', function () {
         logger.info({
             _id: req.id,
             method: req.method,
@@ -82,7 +81,7 @@ app.use(function(req, res, next) {
 });
 
 // Check database connection
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     if (mongoose.connection.readyState) return next();
 
     next({
@@ -92,7 +91,7 @@ app.use(function(req, res, next) {
 });
 
 // Try find matching static file
-app.use(express.static(path.join(__dirname, 'public')));
+app.use(express.static('client/public'));
 
 app.use('/', routes);
 
@@ -102,7 +101,7 @@ app.use(function (req, res) {
 });
 
 // 404 Handler
-app.use(function(req, res, next) {
+app.use(function (req, res, next) {
     next({
         status: 404,
         message: 'Not found.'
@@ -120,7 +119,7 @@ app.use(function (err, req, res, next) {
     logger.error('error', err)
 });
 
-process.on('uncaughtException', function(err) {
+process.on('uncaughtException', function (err) {
     console.log(err);
     logger.error('uncaughtException', err);
 });

@@ -6,12 +6,12 @@
  */
 
 var async = require('async');
-var logger = require('../../config/logger');
+var logger = require('../../../config/logger');
 
 var Mailbox = require('../api/services/MailboxService');
 var CheckMailbox = require('../shared/monitor/worker');
 
-var job = function(callback) {
+var job = function (callback) {
     var query = {
         active: true
     };
@@ -23,7 +23,7 @@ var job = function(callback) {
         skip: 0
     };
 
-    Mailbox.search(query, scope, options, function(err, docs) {
+    Mailbox.search(query, scope, options, function (err, docs) {
         if (err) return callback(err);
 
         if (docs.length === 0) {
@@ -40,7 +40,7 @@ var job = function(callback) {
                     }
                     done();
                 })
-            } catch(e) {
+            } catch (e) {
                 logger.error('CheckMailbox', {
                     error: e,
                     trace: console.trace()
@@ -48,9 +48,9 @@ var job = function(callback) {
 
                 done();
             }
-        }, function(err) {
+        }, function (err) {
             if (err) {
-                logger.error('CheckMailbox', { error: err });
+                logger.error('CheckMailbox', {error: err});
                 return callback();
             }
             console.log('all mailboxes checked');

@@ -8,7 +8,7 @@
 // Core Libraries
 var Imap = require('imap');
 var async = require('async');
-var logger = require('../../../config/logger');
+var logger = require('../../../../config/logger');
 
 // Services
 var Mailbox = require('../../api/services/MailboxService');
