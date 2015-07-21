@@ -19,11 +19,12 @@ module.exports.addMailbox = function(req, res, next) {
 };
 
 module.exports.getMailbox = function(req, res, next) {
-    var params = {
+    var query = {
         _id: req.params._id
     };
+    var scope = {};
 
-    Mailbox.findOne(params, {}, function(err, doc) {
+    Mailbox.findOne(query, scope, function (err, doc) {
         if (err) return next(err);
 
         res.status(200).json(doc);
@@ -65,11 +66,11 @@ module.exports.updateMailbox = function(req, res, next) {
 };
 
 module.exports.removeMailbox = function(req, res, next) {
-    var params = {
+    var query = {
       _id: req.params._id
     };
 
-    Mailbox.remove(params, function (err) {
+    Mailbox.remove(query, function (err) {
         if (err) return next(err);
 
         res.status(204).json({})

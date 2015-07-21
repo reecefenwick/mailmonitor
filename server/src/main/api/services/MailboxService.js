@@ -20,19 +20,20 @@ module.exports.create = function(params, callback) {
     });
 };
 
-module.exports.findOne = function(params, scope, callback) {
-    Mailbox.findOne({
-        _id: params._id
-    }, function (err, doc) {
-        if (err) return callback(Utils.handleDatabaseError(err));
+module.exports.findOne = function (query, scope, callback) {
+    Mailbox
+        .findOne(query)
+        .select(scope)
+        .exec(function (err, doc) {
+            if (err) return callback(Utils.handleDatabaseError(err));
 
-        if (!doc) return callback({
-            status: 404,
-            message: 'No mailbox with that id could be found.'
+            if (!doc) return callback({
+                status: 404,
+                message: 'No results found matching your query.'
+            });
+
+            callback(null, doc);
         });
-
-        callback(null, doc);
-    });
 };
 
 module.exports.search = function(query, scope, options, callback) {
@@ -56,11 +57,9 @@ module.exports.update = function(query, update, callback) {
     })
 };
 
-module.exports.remove = function(params, callback) {
+module.exports.remove = function (query, callback) {
     Mailbox
-        .findOneAndRemove({
-            _id: params._id
-        })
+        .findOneAndRemove(query)
         .exec(function(err, doc) {
             if (err) return callback(Utils.handleDatabaseError(err));
 
