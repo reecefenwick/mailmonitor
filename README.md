@@ -27,7 +27,7 @@ Run the tests
 
 via node:
 
-    node server
+    npm start
 
 Navigate to `http://localhost:3000/`
 
