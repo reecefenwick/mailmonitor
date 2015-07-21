@@ -69,8 +69,7 @@ module.exports.removeMailbox = function(req, res, next) {
       _id: req.params._id
     };
 
-    Mailbox.remove(params, function(err, doc) {
-        console.log(err);
+    Mailbox.remove(params, function (err) {
         if (err) return next(err);
 
         res.status(204).json({})
