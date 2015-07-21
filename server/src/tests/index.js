@@ -8,14 +8,16 @@
 
 process.env.NODE_ENV = process.NODE_ENV || 'development';
 process.env.NODE_CONFIG_DIR = './server/config/env';
-process.env.SILENT_LOG = true;
+//process.env.SILENT_LOG = true;
 
 var Mocha = require('mocha'),
     fs = require('fs'),
     path = require('path');
 
 // First, you need to instantiate a Mocha instance.
-var mocha = new Mocha();
+var mocha = new Mocha({
+    timeout: 60000
+});
 
 // Then, you need to use the method "addFile" on the mocha
 // object for each file.

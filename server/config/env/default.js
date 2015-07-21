@@ -14,6 +14,11 @@ module.exports = function () {
                     name: 'EasyShare-DEV'
                 },
                 http: 3000,
+                imap: {
+                    host: 'imap.gmail.com',
+                    port: 993,
+                    tls: true
+                },
                 dbURI: 'mongodb://localhost:27017/mailmonitor',
                 logger: logger
             };
@@ -23,7 +28,11 @@ module.exports = function () {
                     name: 'EasyShare-UAT'
                 },
                 http: 3000,
-                https: 8443,
+                imap: {
+                    host: 'imap.gmail.com',
+                    port: 993,
+                    tls: true
+                },
                 dbURI: 'mongodb://localhost:27017/mailmonitor',
                 logger: logger
             };
@@ -33,7 +42,11 @@ module.exports = function () {
                     name: 'EasyShare'
                 },
                 http: 3000,
-                https: 8443,
+                imap: {
+                    host: 'imap.gmail.com',
+                    port: 993,
+                    tls: true
+                },
                 dbURI: 'mongodb://localhost:27017/mailmonitor',
                 logger: logger
             };

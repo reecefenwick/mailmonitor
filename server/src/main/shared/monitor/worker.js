@@ -8,7 +8,9 @@
 // Core Libraries
 var Imap = require('imap');
 var async = require('async');
-var logger = require('../../../../config/logger');
+
+var config = require('config');
+var logger = config.get('logger');
 
 // Services
 var Mailbox = require('../../api/services/MailboxService');
@@ -34,7 +36,6 @@ var getMailboxConfig = function(callback) {
         });
 
         mailbox = doc;
-        //console.log(mailbox);
 
         callback()
     })
@@ -45,9 +46,9 @@ var getEmails = function(callback) {
     imap = new Imap({
         user: mailbox.props.username,
         password: mailbox.props.password,
-        host: 'imap.gmail.com',
-        port: 993,
-        tls: true
+        host: config.get('imap.host'),
+        port: config.get('imap.port'),
+        tls: config.get('imap.tls')
     });
 
     imap.once('ready', function() {

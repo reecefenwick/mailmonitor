@@ -6,13 +6,12 @@
  */
 
 var Agenda = require('agenda');
-var logger = require('./logger');
-var agenda = new Agenda({db: {address: 'localhost:27017/mailmonitor'}});
+var config = require('config');
+var logger = config.get('logger');
+var agenda = new Agenda({db: {address: config.get('dbURI')}});
 
 // Load scheduled job libs
 var CheckMailbox = require('../src/main/jobs/CheckMailboxes');
-
-console.log('agenda');
 
 var options = {
     concurrency: 1
