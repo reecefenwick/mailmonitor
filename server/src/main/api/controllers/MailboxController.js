@@ -73,7 +73,7 @@ module.exports.removeMailbox = function(req, res, next) {
         console.log(err);
         if (err) return next(err);
 
-        res.status(204).json(doc)
+        res.status(204).json({})
     })
 };
 

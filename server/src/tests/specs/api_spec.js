@@ -113,11 +113,10 @@ describe('PUT /mailbox/:_id', function() {
     })
 });
 
-//describe('DELETE /mailbox/:_id', function() {
-//    it('should delete the mailbox from the database', function(done) {
-//        request(app)
-//            .del(basePath + '/mailbox/' + mailbox._id)
-//            .expect('Content-Type', /json/)
-//            .expect(204, done);
-//    })
-//});
+describe('DELETE /mailbox/:_id', function () {
+    it('should delete the mailbox from the database', function (done) {
+        request(app)
+            .del(basePath + '/mailbox/' + mailbox._id)
+            .expect(204, done);
+    })
+});
