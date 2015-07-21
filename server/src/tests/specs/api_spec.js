@@ -99,8 +99,10 @@ describe('GET /mailbox/:_id', function() {
 
 describe('PUT /mailbox/:_id', function() {
     it('should update the mailbox in the database', function(done) {
+        mailbox.name = "New updated name";
         request(app)
             .put(basePath + '/mailbox/' + mailbox._id)
+            .send(mailbox)
             .expect(function(res) {
                 res.body.should.have.property('_id');
                 // TODO Expand?

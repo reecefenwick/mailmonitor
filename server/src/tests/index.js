@@ -8,7 +8,7 @@
 
 process.env.NODE_ENV = process.NODE_ENV || 'development';
 process.env.NODE_CONFIG_DIR = './server/config/env';
-//process.env.SILENT_LOG = true;
+process.env.SILENT_LOG = true;
 
 var Mocha = require('mocha'),
     fs = require('fs'),
