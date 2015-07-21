@@ -1,14 +1,14 @@
 /**
- * test.js
+ * api_spec.js
  *
- * @description :: Runs unit tests against the API
+ * @description :: Full end to end test of the API Only
  * @docs        :: Uses Mocha test framework - http://mochajs.org/ && https://github.com/visionmedia/supertest/
  */
 
 var request = require('supertest');
 var should = require('chai').should(); // Assertion library - extends the Object.prototype
 
-var app = require('../../app');
+var app = require('../../../app');
 
 var basePath = '/api';
 
@@ -28,14 +28,13 @@ describe('GET /', function() {
 
 describe('POST /mailbox', function() {
     it('responds successfully with object id', function(done) {
-        var body = require('./data/mailbox-data');
+        var body = require('./../data/mailbox_data');
 
         request(app)
             .post(basePath + '/mailbox')
             .send(body)
             .expect(function(res) {
                 res.body.should.have.property('_id');
-                console.log(res.body);
                 mailbox = res.body
             })
             .expect('Content-Type', /json/)

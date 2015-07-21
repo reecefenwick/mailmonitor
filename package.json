@@ -4,7 +4,7 @@
   "private": true,
   "scripts": {
     "start": "node server/start",
-    "test": "mocha server/src/tests/*.js -u tdd --timeout 50000"
+    "test": "node server/src/tests/index.js -u tdd --timeout 50000"
   },
   "dependencies": {
     "agenda": "^0.6.28",
@@ -25,6 +25,7 @@
   },
   "devDependencies": {
     "chai": "^2.3.0",
+    "mocha": "^2.2.5",
     "supertest": "0.15.0"
   }
 }

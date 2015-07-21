@@ -2,7 +2,7 @@ module.exports = {
     name: 'EasySuiteTest@suncorp.com.au',
     props: {
         username: 'fenwickreece08@gmail.com',
-        password: 'yenc8A32e',
+        password: 'password',
         folder: 'INBOX'
     },
     alerts: {
@@ -19,4 +19,25 @@ module.exports = {
         }
     },
     active: true
+};
+
+var x = {
+    "name": "Reece",
+    "props": {
+        "username": "geg",
+        "password": "geg",
+        "folder": "geag"
+    },
+    "alerts": {
+        "warning": {
+            "threshold": "1000",
+            "email": "age"
+        },
+        "critical": {
+            "threshold": "1200",
+            "email": "aegea",
+            "mobile": "aeg"
+        }
+    },
+    "active": true
 };

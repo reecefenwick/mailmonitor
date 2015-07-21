@@ -1,3 +1,10 @@
+/**
+ * logger.js
+ *
+ * @description :: Configures the winston logger
+ * @help        :: https://github.com/winstonjs/winston
+ */
+
 'use strict';
 
 var winston = require('winston'),
@@ -27,7 +34,8 @@ var config = {
     }
 };
 var options = {
-    colorize: true
+    colorize: true,
+    silent: process.env.SILENT_LOG ? true : false
 };
 
 // winston.remove(winston.transports.Console);
