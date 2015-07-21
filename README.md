@@ -18,10 +18,6 @@ Install dependencies via npm:
     npm install
 
 ## Tests
-
-Install `mocha` globally:
-
-    npm install mocha -g
     
 Run the tests
 
