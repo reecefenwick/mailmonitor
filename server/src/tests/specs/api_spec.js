@@ -28,7 +28,7 @@ describe('GET /', function() {
 
 describe('POST /mailbox', function() {
     it('responds successfully with object id', function(done) {
-        var body = require('./../data/mailbox_data');
+        var body = require('./../data/mailbox_api_data');
 
         request(app)
             .post(basePath + '/mailbox')
@@ -67,7 +67,6 @@ describe('POST /mailbox', function() {
             .expect('Content-Type', /json/)
             .expect(400, done);
     })
-
 });
 
 describe('GET /mailbox', function() {
