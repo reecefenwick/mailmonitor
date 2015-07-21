@@ -53,4 +53,4 @@ module.exports = function () {
         default:
             throw new Error('No NODE_ENV environment variable set.')
     }
-}();
+}(); // These () calls the function and returns the config JSON object
