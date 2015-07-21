@@ -39,7 +39,7 @@ var mailboxSchema = new Schema({
         critical: {
             threshold: { type: Number, required: true },
             email: { type: String, required: true, default: '' },
-            mobile: { type: Number, required: true, default: null },
+            mobile: {type: String, required: true, default: null},
             lastCritical: { type: Date, required: false, default: null }
         }
     },

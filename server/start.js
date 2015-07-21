@@ -1,24 +1,41 @@
 /**
  * start.js
  *
- * @description :: Load application (app.js) and bind to webserver
+ * @description :: Load application (app.js) and bind to a http webserver
  * @help        :: http://gulpjs.com/
  */
 
 'use strict';
 
 /**
- * Module dependencies.
+ * Set environment variable, e.g. development, testing, production
+ */
+
+process.env.NODE_ENV = process.NODE_ENV || 'development';
+
+/**
+ * Get Config
+ * @help :: https://github.com/lorenwest/node-config
+ */
+
+// Tell config module where to find the config file
+process.env.NODE_CONFIG_DIR = './server/config/env';
+// Crash if there are any issues with the config
+process.env.NODE_CONFIG_STRICT_MODE = true;
+
+var config = require('config');
+
+/**
+ * Import dependencies.
  */
 
 var app = require('./app');
 var http = require('http');
 var fs = require('fs');
 
-
 http
     .createServer(app)
-    .listen(process.env.HTTP_PORT || 3000)
+    .listen(config.get('http'))
     .on('error', onError)
     .on('listening', onListening);
 

@@ -7,33 +7,41 @@
 
 'use strict';
 
-// Core Middleware
+/**
+ * Get Config
+ */
+
+var config = require('config');
+var logger = config.get('logger');
+
+/**
+ * Import core libraries
+ */
+
 var express = require('express');
-var logger = require('./config/logger');
 var bodyParser = require('body-parser');
 var authParser = require('express-auth-parser');
-
-// Extra Libraries
-var uuid = require('node-uuid');
+var onHeaders = require('on-headers');
 var compress = require('compression');
+var uuid = require('node-uuid');
 var mongoose = require('mongoose');
 
-// Configure database connection
-mongoose.connect('mongodb://localhost:27017/mailmonitor');
+/**
+ * Open connections to the database
+ */
 
-mongoose.connection.on('error', function () {
-    console.error('database connection error', arguments);
-    // TODO - What do we do here? - kill process?
-});
+require('./config/database');
 
-mongoose.connection.on('open', function () {
-    console.log('Connected to the database');
-});
+/**
+ * Configure scheduled tasks
+ */
 
-// Configure agenda and scheduled jobs
-//require('./config/agenda');
+require('./config/agenda');
 
-// Initiate App
+/**
+ * Initiate express
+ */
+
 var app = express();
 
 // Load and configure router
@@ -53,32 +61,35 @@ app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({extended: false}));
 app.use(authParser);
 
-// Disable
+// Disable powered by express header
 app.set('x-powered-by', false);
 
 // Generate UUID for request
 app.use(function (req, res, next) {
     req.id = uuid.v4();
-    res.set('requestID', req.id);
+    res.set('X-Request-Id', req.id);
     next();
 });
 
-// Bind to incoming request and log when closed
+// Log Request
 app.use(function (req, res, next) {
-    // Log request
     // Listen for response event and log
-    res.on('finish', function () {
+    onHeaders(res, function () {
         logger.info({
             _id: req.id,
             method: req.method,
             url: req.url,
             statusCode: res.statusCode,
-            time: (Date.now() - req.start)
+            time: (Date.now() - req.start),
+            'res-length': res._headers['content-length'] || 0,
+            'req-length': req.headers['content-length'] || 0
         });
     });
 
     next();
 });
+
+app.use(express.static('client/public'));
 
 // Check database connection
 app.use(function (req, res, next) {
@@ -86,31 +97,31 @@ app.use(function (req, res, next) {
 
     next({
         status: 503,
-        message: 'Unable to connect the the database.'
+        message: 'Unable to connect to the database.'
     })
 });
-
-// Try find matching static file
-app.use(express.static('client/public'));
 
 app.use('/', routes);
 
 // Allow for page refresh with angular
-app.use(function (req, res) {
-    res.redirect('/#' + req.originalUrl);
+app.use(function (req, res, next) {
+    if (req.method === 'GET') return res.redirect('/#' + req.originalUrl);
+
+    next();
 });
 
-// 404 Handler
+/// catch 404 and forwarding to error handler
 app.use(function (req, res, next) {
-    next({
-        status: 404,
-        message: 'Not found.'
-    })
+    next({status: 404, message: 'Not found.'});
 });
 
 // error handlers
-
 app.use(function (err, req, res, next) {
+    if (err.name === 'JsonSchemaValidation') {
+        err.status = 400;
+        err.message = 'Invalid data found.';
+        err.error = err.validations;
+    }
     res.status(err.status || 500);
     res.json({
         message: err.message,
@@ -120,7 +131,6 @@ app.use(function (err, req, res, next) {
 });
 
 process.on('uncaughtException', function (err) {
-    console.log(err);
     logger.error('uncaughtException', err);
 });
 

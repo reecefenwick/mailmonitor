@@ -19,7 +19,6 @@ var options = {
 };
 
 agenda.define('check mailboxes', options, function (job, done) {
-    logger.info(job.attrs);
     CheckMailbox(done);
 });
 

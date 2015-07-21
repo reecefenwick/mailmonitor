@@ -76,3 +76,69 @@ module.exports.removeMailbox = function(req, res, next) {
         res.status(204).json(doc)
     })
 };
+
+/**
+ * @description :: Define the json-schema for request validation for Mailbox related requests - if fields appear missing
+ * it is intentional as we want to protect fields from being modified.
+ *
+ * This does not necessarily have to align with the MailboxModel - this is for request level validation
+ *
+ * @help :: https://github.com/tdegrunt/jsonschema - based of the latest IETF json-schema spec
+ */
+
+module.exports.schema = {
+    type: 'object',
+    properties: {
+        name: {
+            type: 'string',
+            required: true
+        },
+        props: {
+            type: 'object',
+            username: {
+                type: 'string',
+                required: true
+            },
+            password: {
+                type: 'string',
+                required: true
+            }
+        },
+        alerts: {
+            type: 'object',
+            critical: {
+                type: 'object',
+                threshold: {
+                    type: 'number',
+                    required: true
+                },
+                mobile: {
+                    type: 'string',
+                    required: true
+                },
+                email: {
+                    type: 'string',
+                    format: 'email',
+                    required: true
+                }
+            },
+            warning: {
+                type: 'object',
+                threshold: {
+                    type: 'number',
+                    required: true
+                },
+                email: {
+                    type: 'string',
+                    format: 'email',
+                    required: true
+                }
+            }
+        },
+        active: {
+            type: 'boolean',
+            required: false
+        }
+    },
+    additionalProperties: false
+};

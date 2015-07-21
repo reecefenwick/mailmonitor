@@ -7,6 +7,7 @@
 
 var express = require('express');
 var router = express.Router();
+var validate = require('express-jsonschema').validate;
 
 // Load Controllers
 var MailboxCtrl = require('../src/main/api/controllers/MailboxController');
@@ -22,7 +23,7 @@ router
 
 router
     .route('/api/mailbox')
-    .post(MailboxCtrl.addMailbox)
+    .post(validate({body: MailboxCtrl.schema}), MailboxCtrl.addMailbox)
     .get(MailboxCtrl.search);
 
 router
