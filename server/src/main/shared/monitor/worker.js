@@ -19,7 +19,6 @@ var imap = {};
 var summary = {};
 
 var getMailboxConfig = function(callback) {
-    //logger.info('Searching for mailbox config', {mailbox: mailbox._id});
     Mailbox.findOne({ _id: mailbox._id }, {}, function(err, doc) {
         if (err) return callback({
             step: 'getMailboxConfig',

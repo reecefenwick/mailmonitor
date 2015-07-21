@@ -6,7 +6,8 @@
  */
 
 var async = require('async');
-var logger = require('../../../config/logger');
+var config = require('config');
+var logger = config.get('logger');
 
 var Mailbox = require('../api/services/MailboxService');
 var CheckMailbox = require('../shared/monitor/worker');
@@ -42,8 +43,7 @@ var job = function (callback) {
                 })
             } catch (e) {
                 logger.error('CheckMailbox', {
-                    error: e,
-                    trace: console.trace()
+                    error: e
                 });
 
                 done();
