@@ -63,7 +63,6 @@ describe('POST /mailbox', function() {
             .post(basePath + '/mailbox')
             .send(body)
             .expect(function(res) {
-                // console.log(res.body)
             })
             .expect('Content-Type', /json/)
             .expect(400, done);
@@ -88,7 +87,6 @@ describe('GET /mailbox', function() {
 
 describe('GET /mailbox/:_id', function() {
     it('should respond with the full mailbox config', function(done) {
-        console.log(mailbox._id);
         request(app)
             .get(basePath + '/mailbox/' + mailbox._id)
             .expect(function(res) {
