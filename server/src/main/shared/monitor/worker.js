@@ -62,7 +62,7 @@ var getEmails = function(callback) {
 
             summary.totalEmails = box.messages.total;
 
-            logger.info('Opened %s folder, %s messages in total', mailbox.props.folder, summary.totalMsgs);
+            logger.info('Opened %s folder, %s messages in total', mailbox.props.folder, summary.totalEmails);
 
             imap.search(["UNSEEN"], function (err, results) {
                 if (err) return callback({
@@ -238,18 +238,15 @@ var sendNotifications = function (health, callback) {
         var query = {_id: mailbox._id};
 
         // Bad global below
+        var update = {};
         update[temp] = new Date();
 
         Mailbox.update(query, update, function (err) {
-            console.log(err);
             if (err) return callback(err);
 
-            console.log('updated');
-
+            console.log('run summary updated');
+            callback();
         });
-
-        logger.error('Error sending notification', err);
-        callback();
     })
 };
 
@@ -275,6 +272,7 @@ var checkMailbox = function(_id, callback) {
         logger.info('Completed processing %s in %s seconds', mailbox.name, summary.totalTime);
 
         if (err) {
+            logger.error(err);
             summary.error = err;
             callback(err);
         } else {
